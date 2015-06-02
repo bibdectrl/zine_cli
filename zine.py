@@ -86,7 +86,38 @@ def search_zines():
     main_menu()    
 
 def edit_zine():
-    pass    
+    try:
+        zine_id = int(raw_input("Enter ID of zine to search > "))
+    except:
+        print "Please enter a valid number!"
+    else:
+        results = Zine.select().where(Zine.id == zine_id)
+        if results.count() == 0:
+            print "No zine with that ID"
+        else:
+            result = results.first()
+            print "Found {} {} {} {}".format(result.title, result.author, result.genre, result.zine_format)
+            values = {'title': result.title, 'author':result.author, 'genre':result.genre, 'format':result.zine_format}
+            new_title = raw_input("Enter new title? [yN] > ")
+            if new_title.lower() == 'y':
+                values['title'] = get_title()
+            new_author = raw_input("Enter new author? [yN] > ")
+            if new_author.lower() == 'y':
+                values['author'] = get_author()
+            new_genre = raw_input("Enter new genre? [yN] > ")
+            if new_genre.lower() == 'y':
+                values['genre'] = get_genre()
+            new_format = raw_input("Enter new format? [yN] > ")
+            if new_format.lower() == 'y':
+                values['format'] = get_format()
+            print "New record: {}".format(values)
+            accept = raw_input("Accept? [yN] > ")
+            if accept.lower() == 'y':
+                print "Updating database!"
+                q = Zine.update(title = values['title'], author = values['author'], zine_format = values['format'], genre = values['genre']).where(Zine.id == zine_id)
+                q.execute()
+
+    main_menu()
 
 def main_menu():
     OPTIONS = ['ADD ZINE', 'SEARCH ZINES', 'EDIT ZINE', 'QUIT']
