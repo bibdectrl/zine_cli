@@ -47,6 +47,8 @@ def get_genre():
 def get_title():
     """Prompt user for title"""
     title = raw_input("Enter title > ").strip()
+    if title.strip() == '':
+        return None
     confirm = raw_input('Confirm "{}" [yN] > '.format(title)).lower()
     if confirm == 'y':
         return title
@@ -56,6 +58,8 @@ def get_title():
 def get_author():
     """Prompt user for author"""
     author = raw_input("Enter author > ").strip()
+    if title.strip() == '':
+        return None
     confirm = raw_input('Confirm "{}" [yN] > '.format(author)).lower()
     if confirm == 'y':
         return author
@@ -64,7 +68,13 @@ def get_author():
 
 def add_zine():
     title = get_title()
+    if not title:
+        MESSAGES.append("ABORTED!")
+        main_menu()
     author = get_author()
+    if not author:
+        MESSAGES.append("ABORTED!")
+        main_menu()
     genre = get_genre()
     zine_format = get_format()
     try:
@@ -76,14 +86,17 @@ def add_zine():
         main_menu()
 
 
-#def get_spacings(result_set):
-    #"""get the maximum length for each field in result"""
-    #pass
+def get_spacings(result_set):
+    """get the maximum length for each field in result"""
+    longest_id = reduce(max, [len(str(z.id)) for z in result_set]) + 5
+    longest_title = reduce(max, [len(z.title) for z in result_set])
+    longest_author = reduce(max, [len(z.author) for z in result_set])
+    longest_format = reduce(max, [len(z.zine_format) for z in result_set])
+    longest_genre = reduce(max, [len(z.genre) for z in result_set])
+    return longest_id, longest_title, longest_author, longest_genre, longest_format
 
-#def format_line(result, spacing):
-    #"""return a line with correct spacing and padding"""
-    #pass
-
+def format_line(result, spacing):
+    return result + (" " * (spacing - len(result)))
 
 def search_zines():
     query = raw_input("Enter search string > ")
@@ -92,10 +105,19 @@ def search_zines():
     if results.count() == 0:
         print "No results!"
     else:
-        #id_space, title_space, author_space, genre_space, format_space = get_spacings(results)   
+        id_space, title_space, author_space, genre_space, format_space = get_spacings(results)   
+        MESSAGES.append("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space))                 
         for result in results:
-            MESSAGES.append("{} {} {} {} {}".format(result.id, result.title, result.author, result.genre, result.zine_format))
-            MESSAGES.append("{} {} {} {} {}".format("-"*len(str(result.id)), "-"*len(result.title), "-"*len(result.author), "-"*len(result.genre), "-"*len(result.zine_format)))
+             MESSAGES.append("|{}|{}|{}|{}|{}|".format(
+                                                     format_line(str(result.id), id_space), 
+                                                     format_line(result.title, title_space), 
+                                                     format_line(result.author, author_space), 
+                                                     format_line(result.genre, genre_space), 
+                                                     format_line(result.zine_format, format_space)
+                                                     )
+             )
+             MESSAGES.append("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space))           
+
 
     main_menu()    
 
@@ -136,20 +158,22 @@ def edit_zine():
 def main_menu():
     OPTIONS = ['ADD ZINE', 'SEARCH ZINES', 'EDIT ZINE', 'QUIT']
     with t.fullscreen():
-        print "#"*40
-        print "#"  + (" "* 38) + "#"
-        print "#"  + (" " * 13) + "TORONTO" + (" " * 18) + "#"
-        print "#"  + (" " * 13) + "ZINE" + (" " * 21) + "#"
-        print "#"  + (" " * 13) + "LIBRARY" + (" " * 18) + "#"
-        print "#"  + (" " * 38) + "#"
-        print "#"*40
+        print t.bold("#"*40)
+        print t.bold("#"  + (" "* 38) + "#")
+        print t.bold("#"  + (" " * 13) + "TORONTO" + (" " * 18) + "#")
+        print t.bold("#"  + (" " * 13) + "ZINE" + (" " * 21) + "#")
+        print t.bold("#"  + (" " * 13) + "LIBRARY" + (" " * 18) + "#")
+        print t.bold("#"  + (" " * 38) + "#")
+        print t.bold("#"*40)
+        print ""
         if len(MESSAGES) > 0:
             while len(MESSAGES) > 0:
-                m = MESSAGES.pop()
+                m = MESSAGES.pop(0)
                 print m
             print "\n"    
         for index, option in enumerate(OPTIONS):
             print t.bold("({}) {}".format(index + 1, option))
+        print ""    
         try:
             f = int(raw_input("Enter choice > ").strip())
         except:
