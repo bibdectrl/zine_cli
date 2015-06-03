@@ -35,7 +35,7 @@ def get_format():
 
 def get_genre():
     """Prompt user for genre of zine"""
-    GENRES = ['PERZINE', 'FANZINE', 'LITZINE', 'HUMOUR', 'CULTURE', 'MISCELLANEOUS', 'GENDER/QUEER', 'POLITICS']
+    GENRES = ['PERZINE', 'FANZINE', 'LITZINE', 'HUMOUR', 'CULTURE', 'MISCELLANEOUS', 'GENDER/QUEER', 'POLITICS', 'COMICS', 'ART']
     for index, _format in enumerate(GENRES):
         print "({}) {}".format(index + 1, _format)
     try:
