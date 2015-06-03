@@ -3,9 +3,11 @@ import datetime
 import re
 import sys
 
+from blessings import Terminal
 from peewee import *
 
-
+t = Terminal()
+MESSAGES = []
 DATABASE = SqliteDatabase('zines.db')
 
 #helpful functions
@@ -14,9 +16,9 @@ def title_order(string):
     """Return a string with funny and unhelpful characters removed from the front"""
     title_portion = re.compile(r"[A-Za-z0-9].+")
     try:
-        return title_portion.search(string).group()
+        return title_portion.search(string).group().lower()
     except:
-        return string
+        return string.lower()
 
 
 def get_format():
@@ -67,22 +69,34 @@ def add_zine():
     zine_format = get_format()
     try:
         Zine.new(title = title, author = author, genre = genre, zine_format = zine_format)
-        print "{} added!".format(title)
+        MESSAGES.append("{} added!".format(title))
         main_menu()
     except Exception as inst:
         print inst
         main_menu()
 
+
+#def get_spacings(result_set):
+    #"""get the maximum length for each field in result"""
+    #pass
+
+#def format_line(result, spacing):
+    #"""return a line with correct spacing and padding"""
+    #pass
+
+
 def search_zines():
     query = raw_input("Enter search string > ")
     query = '%' + query + '%'
-    results = Zine.select().where( (Zine.title ** query) | (Zine.author ** query) )
+    results = Zine.select().where( (Zine.title ** query) | (Zine.author ** query)).order_by( Zine.title_order )
     if results.count() == 0:
         print "No results!"
-    else:    
+    else:
+        #id_space, title_space, author_space, genre_space, format_space = get_spacings(results)   
         for result in results:
-            print "{} {} {} {} {} {}".format(result.id, result.title, result.author, result.genre, result.zine_format, result.date_added)
- 
+            MESSAGES.append("{} {} {} {} {}".format(result.id, result.title, result.author, result.genre, result.zine_format))
+            MESSAGES.append("{} {} {} {} {}".format("-"*len(str(result.id)), "-"*len(result.title), "-"*len(result.author), "-"*len(result.genre), "-"*len(result.zine_format)))
+
     main_menu()    
 
 def edit_zine():
@@ -121,24 +135,37 @@ def edit_zine():
 
 def main_menu():
     OPTIONS = ['ADD ZINE', 'SEARCH ZINES', 'EDIT ZINE', 'QUIT']
-    for index, option in enumerate(OPTIONS):
-        print "({}) {}".format(index + 1, option)
-    try:
-        f = int(raw_input("Enter choice > ").strip())
-    except:
-        main_menu()
-    if f in range(1, len(OPTIONS) + 1):    
-        if OPTIONS[f-1] == 'ADD ZINE':
-            add_zine()
-        elif OPTIONS[f-1] == 'SEARCH ZINES':
-            search_zines()
-        elif OPTIONS[f-1] == 'EDIT ZINE':
-            edit_zine()    
-        elif OPTIONS[f-1] == 'QUIT':
-            print "Goodbye!"
-            exit(0)
-    else:
-        main_menu()                
+    with t.fullscreen():
+        print "#"*40
+        print "#"  + (" "* 38) + "#"
+        print "#"  + (" " * 13) + "TORONTO" + (" " * 18) + "#"
+        print "#"  + (" " * 13) + "ZINE" + (" " * 21) + "#"
+        print "#"  + (" " * 13) + "LIBRARY" + (" " * 18) + "#"
+        print "#"  + (" " * 38) + "#"
+        print "#"*40
+        if len(MESSAGES) > 0:
+            while len(MESSAGES) > 0:
+                m = MESSAGES.pop()
+                print m
+            print "\n"    
+        for index, option in enumerate(OPTIONS):
+            print t.bold("({}) {}".format(index + 1, option))
+        try:
+            f = int(raw_input("Enter choice > ").strip())
+        except:
+            main_menu()
+        if f in range(1, len(OPTIONS) + 1):    
+            if OPTIONS[f-1] == 'ADD ZINE':
+                add_zine()
+            elif OPTIONS[f-1] == 'SEARCH ZINES':
+                search_zines()
+            elif OPTIONS[f-1] == 'EDIT ZINE':
+                edit_zine()    
+            elif OPTIONS[f-1] == 'QUIT':
+                print "Goodbye!"
+                exit(0)
+        else:
+            main_menu()                
           
 
 class BaseModel(Model):
