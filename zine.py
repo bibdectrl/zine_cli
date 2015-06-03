@@ -58,7 +58,7 @@ def get_title():
 def get_author():
     """Prompt user for author"""
     author = raw_input("Enter author > ").strip()
-    if title.strip() == '':
+    if author.strip() == '':
         return None
     confirm = raw_input('Confirm "{}" [yN] > '.format(author)).lower()
     if confirm == 'y':
