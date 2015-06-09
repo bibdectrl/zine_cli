@@ -20,11 +20,9 @@ def title_order(string):
     except:
         return string.lower()
 
-
 def get_format():
     """Prompt user for format of zine"""
     FORMATS = ['HALF-SIZE', 'FULL-SIZE', 'QUARTER-SIZE', 'HALF-LEGAL', 'ODD-SIZE', 'BOOK', 'MAGAZINE']
-
     for index, _format in enumerate(FORMATS):
         print "({}) {}".format(index + 1, _format)
     try:
@@ -85,7 +83,6 @@ def add_zine():
         print inst
         main_menu()
 
-
 def get_spacings(result_set):
     """get the maximum length for each field in result"""
     longest_id = reduce(max, [len(str(z.id)) for z in result_set]) + 5
@@ -98,6 +95,31 @@ def get_spacings(result_set):
 def format_line(result, spacing):
     return result + (" " * (spacing - len(result)))
 
+def print_results(results):
+    total_pages = results.count() / 5
+    for page in range(1, total_pages):
+        id_space, title_space, author_space, genre_space, format_space = get_spacings(results.paginate(page, 5))   
+        print t.bold("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space)) 
+        page_results = results.paginate(page, 5)
+        for result in page_results:
+            print t.bold("|{}|{}|{}|{}|{}|".format(
+                                                   format_line(str(result.id), id_space), 
+                                                   format_line(result.title, title_space), 
+                                                   format_line(result.author, author_space), 
+                                                   format_line(result.genre, genre_space), 
+                                                   format_line(result.zine_format, format_space)
+                                                   )
+            )
+            print t.bold("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space))
+            next_ = raw_input("Press enter to continue, q to return to main menu, or e to edit a record > ")
+            if next_.lower() == 'q':
+                main_menu() 
+            elif next_.lower() == 'e':
+                edit_zine()
+            else:
+                continue
+
+
 def search_zines():
     query = raw_input("Enter search string > ")
     query = '%' + query + '%'
@@ -105,20 +127,7 @@ def search_zines():
     if results.count() == 0:
         print "No results!"
     else:
-        id_space, title_space, author_space, genre_space, format_space = get_spacings(results)   
-        MESSAGES.append("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space))                 
-        for result in results:
-             MESSAGES.append("|{}|{}|{}|{}|{}|".format(
-                                                     format_line(str(result.id), id_space), 
-                                                     format_line(result.title, title_space), 
-                                                     format_line(result.author, author_space), 
-                                                     format_line(result.genre, genre_space), 
-                                                     format_line(result.zine_format, format_space)
-                                                     )
-             )
-             MESSAGES.append("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space))           
-
-
+        print_results(results)
     main_menu()    
 
 def edit_zine():
