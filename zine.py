@@ -111,13 +111,13 @@ def print_results(results):
                                                    )
             )
             print t.bold("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space))
-            next_ = raw_input("Press enter to continue, q to return to main menu, or e to edit a record > ")
-            if next_.lower() == 'q':
-                main_menu() 
-            elif next_.lower() == 'e':
-                edit_zine()
-            else:
-                continue
+        next_ = raw_input("Press enter to continue, q to return to main menu, or e to edit a record > ")
+        if next_.lower() == 'q':
+            main_menu() 
+        elif next_.lower() == 'e':
+            edit_zine()
+        else:
+            continue
 
 
 def search_zines():
