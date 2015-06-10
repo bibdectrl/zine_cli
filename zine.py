@@ -232,11 +232,11 @@ class Borrowed(BaseModel):
     zine = ForeignKeyField(Zine, related_name = 'zine')
     borrowed_on = DateTimeField()
     due_date = DateTimeField()
-   
-       
+
+     
 
 def initialize():
-    DATABASE.create_tables([Zine, Patron, Borrowed])
+    DATABASE.create_tables([Zine, Patron, Borrowed], safe = True)
     DATABASE.close()
 
 if __name__ == '__main__':
