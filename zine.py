@@ -124,7 +124,7 @@ def print_results(results):
 
 
 def search_zines():
-    query = raw_input("Enter search string > ")
+    query = raw_input("Enter search string > ").strip().lower()
     query = '%' + query + '%'
     results = Zine.select().where( (Zine.title ** query) | (Zine.author ** query)).order_by( Zine.title_order )
     if results.count() == 0:
