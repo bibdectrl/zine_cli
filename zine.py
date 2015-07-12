@@ -2,6 +2,7 @@
 import datetime
 import re
 import sys
+from math import ceil
 
 from blessings import Terminal
 from peewee import *
@@ -98,9 +99,9 @@ def format_line(result, spacing):
         return result + (" " * (spacing - len(result)))
 
 def print_results(results):
-    total_pages = results.count() / 5
+    total_pages = int(ceil(results.count() / 5.0))
     title_space = 40
-    for page in range(1, total_pages):
+    for page in range(1, total_pages + 1):
         id_space, author_space, genre_space, format_space = get_spacings(results.paginate(page, 5))   
         print t.bold("|{}|{}|{}|{}|{}|".format("-"*id_space, "-"*title_space, "-"*author_space, "-"*genre_space, "-"*format_space)) 
         page_results = results.paginate(page, 5)
