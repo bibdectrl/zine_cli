@@ -130,6 +130,7 @@ def search_zines():
     results = Zine.select().where( (Zine.title ** query) | (Zine.author ** query)).order_by( Zine.title_order )
     if results.count() == 0:
         print "No results!"
+        raw_input("")
     else:
         print_results(results)
     main_menu()    
@@ -143,6 +144,7 @@ def edit_zine():
         results = Zine.select().where(Zine.id == zine_id)
         if results.count() == 0:
             print "No zine with that ID"
+            raw_input("")
         else:
             result = results.first()
             print "Found {} {} {} {}".format(result.title, result.author, result.genre, result.zine_format)
